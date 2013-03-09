@@ -1,0 +1,8 @@
+name: websocket_chat_server
+version: 0.1.0
+author: Terry Mitsuoka <TerryMitsuoka@gmail.com>
+description: Dart sample WebSocket chat server application. Includes client  program for this service written in JavaScript (for Chrome) and in Dart (for Dartium) also.
+homepage: https://github.com/mitsuoka/websocket_chat_server
+dependencies:
+  mime_type: any
+  browser: any

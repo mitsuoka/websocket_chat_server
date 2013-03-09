@@ -1,0 +1,132 @@
+<!--
+  JavaScript based WebSocketChat client.
+  This HTML file is used for WebSocketChatServer test.
+  Open this file from your Chrome browser.
+  Ref. http://www.websocket.org/echo.html
+-->
+
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Chat</title>
+
+<script language="javascript" type="text/javascript">
+
+  var wsUri = "ws://localhost:8080/Chat";
+  var mode = "DISCONNECTED";
+
+  window.addEventListener("load", init, false);
+
+  function init() {
+    var consoleLog = document.getElementById("consoleLog");
+    var clearLogBut = document.getElementById("clearLogButton");
+    clearLogBut.onclick = clearLog;
+    var connectBut = document.getElementById("joinButton");
+    connectBut.onclick = doConnect;
+    var disconnectBut = document.getElementById("leaveButton");
+    disconnectBut.onclick = doDisconnect;
+    var sendBut = document.getElementById("sendButton");
+    sendBut.onclick = doSend;
+    var userName = document.getElementById("userName");
+    var sendMessage = document.getElementById("sendMessage");
+  }
+
+  function onOpen(evt) {
+    logToConsole("CONNECTED");
+    mode = "CONNECTED";
+    websocket.send("userName=" + userName.value);
+  }
+
+  function onClose(evt) {
+    logToConsole("DISCONNECTED");
+    mode = "DISCONNECTED";
+  }
+
+  function onMessage(evt) {
+    logToConsole('<span style="color: blue;">' + evt.data+'</span>');
+  }
+
+  function onError(evt) {
+    logToConsole('<span style="color: red;">ERROR:</span> ' + evt.data);
+    websocket.close();
+  }
+
+  function doConnect() {
+    if (mode == "CONNECTED") {
+      return;
+    }
+    if (window.MozWebSocket) {
+      logToConsole('<span style="color: red;"><strong>Info:</strong> This browser supports WebSocket using the MozWebSocket constructor</span>');
+      window.WebSocket = window.MozWebSocket;
+    }
+    else if (!window.WebSocket) {
+      logToConsole('<span style="color: red;"><strong>Error:</strong> This browser does not have support for WebSocket</span>');
+      return;
+    }
+    if (!userName.value) {
+      logToConsole('<span style="color: red;"><strong>Enter your name!</strong></span>');
+      return;
+    }
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function doDisconnect() {
+    if (mode == "CONNECTED") {
+    }
+    websocket.close();
+  }
+
+  function doSend() {
+    if (sendMessage.value != "" && mode == "CONNECTED") {
+      websocket.send(sendMessage.value);
+      sendMessage.value = "";
+    }
+  }
+
+  function clearLog() {
+    while (consoleLog.childNodes.length > 0) {
+      consoleLog.removeChild(consoleLog.lastChild);
+    }
+  }
+
+  function logToConsole(message) {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    consoleLog.appendChild(pre);
+    while (consoleLog.childNodes.length > 50) {
+      consoleLog.removeChild(consoleLog.firstChild);
+    }
+    consoleLog.scrollTop = consoleLog.scrollHeight;
+  }
+
+</script>
+
+<h2>WebSocket Chat Sample</h2>
+<div id="chat">
+  <div id="chat-access">
+    <strong>Your Name:</strong><br>
+    <input id="userName" cols="40">
+    <br>
+    <button id="joinButton">Join</button>
+    <button id="leaveButton">Leave</button>
+    <br>
+    <br>
+    <strong>Message:</strong><br>
+    <textarea rows="5" id="sendMessage" style="font-size:small; width:250px"></textarea>
+    <br>
+    <button id="sendButton">Send</button>
+    <br>
+    <br>
+  </div>
+  <div id="chat-log"> <strong>Chat:</strong>
+    <div id="consoleLog" style="font-size:small; width:270px; border:solid;
+         border-width:1px; height:172px; overflow-y:scroll"></div>
+    <button id="clearLogButton" style="position: relative; top: 3px;">Clear log</button>
+  </div>
+</div>
+
+</html>

@@ -1,0 +1,43 @@
+<!--
+  Dart based WebSocketChat client
+  Open this file from Dartium browser
+-->
+
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<head>
+  <title>WebSocketChatClient</title>
+</head>
+
+<body>
+  <h1>WebSocketChatClient</h1>
+  <h2 id="status">dart is not running</h2>
+
+  <script type="application/dart" src="/chat/web/WebSocketChatClient.dart"></script>
+  <script src="/chat/packages/browser/dart.js"></script>
+
+  <div id="chat">
+    <div id="chat-access">
+      <strong>Your Name:</strong><br>
+      <input id="userName" cols="40">
+      <br>
+      <button id="joinButton">Join</button>
+      <button id="leaveButton">Leave</button>
+      <br>
+      <br>
+      <strong>Message:</strong><br>
+      <textarea rows="5" id="sendMessage" style="font-size:small; width:250px"></textarea>
+      <br>
+      <button id="sendButton">Send</button>
+      <br>
+      <br>
+    </div>
+    <div id="chat-log"> <strong>Chat:</strong>
+      <div id="consoleLog" style="font-size:small; width:270px; border:solid;
+        border-width:1px; height:172px; overflow-y:scroll"></div>
+      <button id="clearLogButton" style="position: relative; top: 3px;">Clear log</button>
+    </div>
+  </div>
+<body>
+
+</html>
