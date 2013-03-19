@@ -101,7 +101,6 @@ class WebSocketHandler {
     } on Exception catch (err) {
       print('${new DateTime.now().toString()} - Exception - ${err.toString()}');
     }
-//ws.close(); //disconnection from the server fires onDone
   }
 
   processClosed(WebSocket ws){
@@ -244,7 +243,7 @@ class NotFoundHandler {
   void onRequest(HttpResponse response){
     response.statusCode = HttpStatus.NOT_FOUND;
     response.headers.set('Content-Type', 'text/html; charset=UTF-8');
-    response.addString(notFoundPageHtml);
+    response.write(notFoundPageHtml);
     response.close();
   }
 }
