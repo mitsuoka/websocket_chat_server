@@ -98,8 +98,9 @@ class WebSocketHandler {
         sendMessage = '${sendMessage}${timeStamp()} * $userName joined.';
       }
       sendAll(sendMessage);
-    } on Exception catch (err) {
+    } catch (err, st) {
       print('${new DateTime.now().toString()} - Exception - ${err.toString()}');
+      print(st);
     }
   }
 
@@ -116,8 +117,9 @@ class WebSocketHandler {
             '(active connections : ${users.length})');
         }
       }
-    } on Exception catch (err) {
+    } catch (err, st) {
       print('${new DateTime.now().toString()} Exception - ${err.toString()}');
+      print(st);
     }
   }
 
@@ -195,8 +197,10 @@ class HttpRequestHandler {
       else { new NotFoundHandler().onRequest(response);
       }
     }
-    on Exception catch (err) {
-      print('Http request handler error : $err.toString()');
+    catch (err, st) {
+      print('${new DateTime.now().toString()} - '
+        'Http request handler error : $err.toString()');
+      print(st);
     }
   }
 }
@@ -224,8 +228,9 @@ class FileHandler {
         }
         new NotFoundHandler().onRequest(response);
       }
-    } on Exception catch (err) {
+    } catch (err, st) {
       print('${new DateTime.now().toString()} - File handler error : $err.toString()');
+      print(st);
     }
   }
 }
