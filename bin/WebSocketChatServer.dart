@@ -14,6 +14,7 @@
   Oct. 2012, incorporated M1 changes
   Feb. 2013, incorporated re-designed dart:io (v2) library
   March 2013, incorporated API changes (WebSocket r19376 and String)
+  April 2013, incorporated API change (WebSocket.send -> WebSocket.add)
   Ref: www.cresc.co.jp/tech/java/Google_Dart/DartLanguageGuide.pdf (in Japanese)
 */
 
@@ -91,7 +92,7 @@ class WebSocketHandler {
             log('${new DateTime.now().toString()} - Duplicated name, closed previous '
             'connection ${users[userName].hashCode} (active connections : ${users.length})');
           }
-          users[userName].send(preFormat('$userName has joind using another connection!'));
+          users[userName].add(preFormat('$userName has joind using another connection!'));
           users[userName].close();  //  close the previous connection
         }
         users[userName] = ws;
@@ -133,7 +134,7 @@ class WebSocketHandler {
 
   void sendAll(String sendMessage) {
     users.forEach((key, value) {
-      value.send(preFormat(sendMessage));
+      value.add(preFormat(sendMessage));
       });
   }
 }
