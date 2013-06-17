@@ -9,12 +9,12 @@
     4. To chat, enter chat message and click 'send' button.
     5. To close the connection, click 'leave' button
   Source : http://blog.sethladd.com/2012/04/dart-server-supports-web-sockets.html
-  June 2012, modified by Cresc Corp.
+  June  2012, modified by Cresc Corp.
   Sept. 2012, modified to incorpolate catch syntax change
-  Oct. 2012, incorporated M1 changes
-  Feb. 2013, incorporated re-designed dart:io (v2) library
+  Oct.  2012, incorporated M1 changes
+  Feb.  2013, incorporated re-designed dart:io (v2) library
   March 2013, incorporated API changes (WebSocket r19376 and String)
-  April 2013, incorporated API change (WebSocket.send -> WebSocket.add)
+  June  2013, incorporated API (WebSocket.send -> WebSocket.add) and Pub changes
   Ref: www.cresc.co.jp/tech/java/Google_Dart/DartLanguageGuide.pdf (in Japanese)
 */
 
@@ -185,14 +185,14 @@ class HttpRequestHandler {
       String fileName = request.uri.path;
       if (fileName == '/chat') {
         if (request.headers['user-agent'][0].contains('Dart')) {
-          fileName = 'web/WebSocketChatClient.html';
+          fileName = '../web/WebSocketChatClient.html';
         }
-        else { fileName = 'web/WebSocketChat.html';
+        else { fileName = '../web/WebSocketChat.html';
         }
         new FileHandler().sendFile(request, response, fileName);
       }
       else if (fileName.startsWith('/chat/')){
-        fileName = request.uri.path.replaceFirst('/chat/', '');
+        fileName = request.uri.path.replaceFirst('/chat/', '../web/');
         new FileHandler().sendFile(request, response, fileName);
       }
       else { new NotFoundHandler().onRequest(response);
