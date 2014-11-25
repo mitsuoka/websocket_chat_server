@@ -9,6 +9,7 @@
     7. To close the connection, click 'leave' button
   June 2012, by Cresc Corp.
   February 2013, revised to incorporate re-designed dart:html library.
+  November 2014, revised to incorporate dart:html change.
   Ref: www.cresc.co.jp/tech/java/Google_Dart/DartLanguageGuide.pdf (in Japanese)
 */
 
@@ -23,13 +24,13 @@ var consoleLog;
 
 void main() {
   show('Dart WebSocket Chat Sample');
-  userName = document.query('#userName');
-  sendMessage = document.query('#sendMessage');
-  consoleLog = document.query('#consoleLog');
-  document.query('#clearLogButton').onClick.listen((e) {clearLog();});
-  document.query('#joinButton').onClick.listen((e) {doConnect();});
-  document.query('#leaveButton').onClick.listen((e) {doDisconnect();});
-  document.query('#sendButton').onClick.listen((e) {doSend();});
+  userName = document.querySelector('#userName');
+  sendMessage = document.querySelector('#sendMessage');
+  consoleLog = document.querySelector('#consoleLog');
+  document.querySelector('#clearLogButton').onClick.listen((e) {clearLog();});
+  document.querySelector('#joinButton').onClick.listen((e) {doConnect();});
+  document.querySelector('#leaveButton').onClick.listen((e) {doDisconnect();});
+  document.querySelector('#sendButton').onClick.listen((e) {doSend();});
 }
 
 doConnect() {
@@ -98,5 +99,5 @@ logToConsole(message) {
 }
 
 show(String message) {
-  document.query('#status').text = message;
+  document.querySelector('#status').text = message;
 }
