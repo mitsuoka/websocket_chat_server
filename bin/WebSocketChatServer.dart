@@ -185,14 +185,14 @@ class HttpRequestHandler {
       String fileName = request.uri.path;
       if (fileName == '/chat') {
         if (request.headers['user-agent'][0].contains('Dart')) {
-          fileName = '../web/WebSocketChatClient.html';
+          fileName = 'web/WebSocketChatClient.html';
         }
-        else { fileName = '../web/WebSocketChat.html';
+        else { fileName = 'web/WebSocketChat.html';
         }
         new FileHandler().sendFile(request, response, fileName);
       }
       else if (fileName.startsWith('/chat/')){
-        fileName = request.uri.path.replaceFirst('/chat/', '../web/');
+        fileName = request.uri.path.replaceFirst('/chat/', 'web/');
         new FileHandler().sendFile(request, response, fileName);
       }
       else { new NotFoundHandler().onRequest(response);
