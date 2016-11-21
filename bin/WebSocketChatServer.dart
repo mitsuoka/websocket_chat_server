@@ -20,7 +20,7 @@
 
 import 'dart:io';
 import 'dart:async';
-import '../packages/mime_type/mime_type.dart' as mime;
+import 'package:mime_type/mime_type.dart' as mime;
 
 final HOST = "127.0.0.1";
 final PORT = 8080;
