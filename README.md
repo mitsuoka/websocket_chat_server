@@ -1,7 +1,8 @@
 ﻿WebSocket Chat Server
 ==
 
-Dart sample WebSocket server application. 
+Dart 2 version of the  sample WebSocket server. 
+
 Client code for Chrome is delivered from this server.
 
 ## Components
@@ -29,7 +30,6 @@ Client program for Chrome browser:
 4. Run the server bin/WebSocketChatServer.dart
 
 5. Access the server from two or more Chrome instances using:
-#
 `http://localhost:8080/chat`
 
 
