@@ -1,8 +1,8 @@
-WebSocket Chat Server
+﻿WebSocket Chat Server
 ==
 
 Dart sample WebSocket server application. 
-Client codes for Chrome and Dartium are provided from this server.
+Client code for Chrome is delivered from this server.
 
 ## Components
 
@@ -14,39 +14,24 @@ Client program for Chrome browser:
  
 + `WebSocketChat.html` //  Written in JavaScript
 
-Client program for Dartium browser:
-
 + `WebSocketChatClient.dart`  //  Written in Dart
 
-+ `WebSocketChatClient.html` 
-
-+ `dart.js` // Bootstrap code
++ `WebSocketChatClient.html`  // Paired with Dart code
 
 ## Installing
 
 1. Download and unpack this application into a folder.
 
-2. Open the folder from Dart Editor.
+2. Open the folder from your IDE.
 
- File - > Open Existing Folder...
+3. Apply 'Get dependencies' and 'Build...' commands.
 
-3. Install pubs.
+4. Run the server bin/WebSocketChatServer.dart
 
- Tools -> Pub Install
+5. Access the server from two or more Chrome instances using:
+#
+`http://localhost:8080/chat`
 
-4. Run the server.
-
- Select bin/WebSocketChatServer.dart
-
- Right click -> Run
-
-5. Access the server from two or more Chrome and or Dartium instances:
-
- http://localhost:8080/chat
-
- This server distinguishes Dartium and returns Dart based client page.
-      
- For request from Chrome, this server returns JS based client page.
 
 ## Try it
 
@@ -55,7 +40,4 @@ Client program for Dartium browser:
 3. To close the connection, click `leave` button.
 
 ## License
-This library is licensed under [MIT License][MIT].
-
-
-[MIT]: http://www.opensource.org/licenses/mit-license.php
+This library is licensed under [MIT License](http://www.opensource.org/licenses/mit-license.php).

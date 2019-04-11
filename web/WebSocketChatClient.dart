@@ -1,15 +1,14 @@
 /*
-  Dart code sample : WebSocket chat client for Dartium
-    1. Save these files and dart.js into a folder named WebSocketChat.
-    2. From Dart editor, File > Open Folder and select this WebSocketChat folder.
-    3. Run WebSocketChatServer.dart as server.
-    4. Call the the server from Dartium: http://localhost:8080/chat
-    5. To establish WebSocket connection, enter your name and click 'join' button.
-    6. To chat, enter chat message and click 'send' button.
-    7. To close the connection, click 'leave' button
+  Dart code sample : WebSocket chat client
+    1. Run WebSocketChatServer.dart.
+    2. Call the the server from Chrome: http://localhost:8080/chat
+    3. To establish WebSocket connection, enter your name and click 'join' button.
+    4. To chat, enter chat message and click 'send' button.
+    5. To close the connection, click 'leave' button
   June 2012, by Cresc Corp.
   February 2013, revised to incorporate re-designed dart:html library.
   November 2014, revised to incorporate dart:html change.
+  April 2019, made Dart 2 compliant
   Ref: www.cresc.co.jp/tech/java/Google_Dart/DartLanguageGuide.pdf (in Japanese)
 */
 

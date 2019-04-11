@@ -1,6 +1,6 @@
 <!--
   Dart based WebSocketChat client
-  Open this file from Dartium browser
+  Open this file from Chrome browser
 -->
 
 <html>
@@ -13,8 +13,7 @@
   <h1>WebSocketChatClient</h1>
   <h2 id="status">dart is not running</h2>
 
-  <script type="application/dart" src="chat/WebSocketChatClient.dart"></script>
-  <script src="/chat/packages/browser/dart.js"></script>
+  <script defer src="WebSocketChatClient.dart.js"></script>
 
   <div id="chat">
     <div id="chat-access">
@@ -26,7 +25,7 @@
       <br>
       <br>
       <strong>Message:</strong><br>
-      <textarea rows="5" id="sendMessage" style="font-size:small; width:250px"></textarea>
+      <textarea rows="5" id="sendMessage" style="font-size:small; width:265px"></textarea>
       <br>
       <button id="sendButton">Send</button>
       <br>
@@ -38,6 +37,6 @@
       <button id="clearLogButton" style="position: relative; top: 3px;">Clear log</button>
     </div>
   </div>
-<body>
+</body>
 
 </html>

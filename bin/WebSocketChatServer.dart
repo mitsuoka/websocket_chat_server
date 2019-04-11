@@ -1,10 +1,8 @@
 /*
   Dart code sample : WebSocket chat server
     1. Run this WebSocketChatServer.dart as server.
-    2. Access the server from Dartium or Chrome browser:
+    2. Access the server from Chrome browser:
          http://localhost:8080/chat
-       This chat server distinguishes Dartium and returns Dart based client page.
-       For the request from Chrome, this server returns JS based client page.
     3. To establish the WebSocket connection, enter your name and click 'join' button.
     4. To chat, enter chat message and click 'send' button.
     5. To close the connection, click 'leave' button
@@ -15,6 +13,7 @@
   Feb.  2013, incorporated re-designed dart:io (v2) library
   March 2013, incorporated API changes (WebSocket r19376 and String)
   June  2013, incorporated API (WebSocket.send -> WebSocket.add) and Pub changes
+  April 2019, made Dart 2 compliant
   Ref: www.cresc.co.jp/tech/java/Google_Dart/DartLanguageGuide.pdf (in Japanese)
 */
 
@@ -24,52 +23,41 @@ import 'package:mime_type/mime_type.dart' as mime;
 
 final HOST = "127.0.0.1";
 final PORT = 8080;
+final HTTP_REQUEST_PATH = "/chat";
+final WEB_SOCKET_REQUEST_PATH = "/Chat";
 final LOG_REQUESTS = true;
 
 void main() {
-  WebSocketHandler webSocketHandler = new WebSocketHandler();
-  HttpRequestHandler httpRequestHandler = new HttpRequestHandler();
+  WebSocketHandler webSocketHandler = WebSocketHandler();
+  HttpRequestHandler httpRequestHandler = HttpRequestHandler();
+  print(
+      '${DateTime.now().toString().substring(11)} - Serving Chat on ${HOST}:${PORT}.');
 
-  HttpServer.bind(HOST, PORT)
-  .then((HttpServer server) {
-    StreamController sc = new StreamController();
-    sc.stream.transform(new WebSocketTransformer())
-      .listen((WebSocket ws){
-        webSocketHandler.wsHandler(ws);
-      });
-
-    server.listen((HttpRequest request) {
-      if (request.uri.path == '/Chat') {
-        sc.add(request);
-      } else if (request.uri.path.startsWith('/chat')) {
+  HttpServer.bind(HOST, PORT).then((HttpServer server) {
+    server.listen((request) {
+      if (request.uri.path == WEB_SOCKET_REQUEST_PATH) {
+        WebSocketTransformer.upgrade(request).then((ws) {
+          webSocketHandler.wsHandler(ws);
+        });
+      } else if (request.uri.path == HTTP_REQUEST_PATH) {
         httpRequestHandler.requestHandler(request);
-      } else {
-        new NotFoundHandler().onRequest(request.response);
       }
     });
   });
-
-  print('${new DateTime.now().toString()} - Serving Chat on ${HOST}:${PORT}.');
 }
-
 
 // handle WebSocket events
 class WebSocketHandler {
-
   Map<String, WebSocket> users = {}; // Map of current users
 
   wsHandler(WebSocket ws) {
-    if (LOG_REQUESTS) {
-      log('${new DateTime.now().toString()} - New connection ${ws.hashCode} '
+    log('New connection ${ws.hashCode} '
         '(active connections : ${users.length + 1})');
-    }
     ws.listen((message) {
       processMessage(ws, message);
-      } ,
-      onDone:(){
-        processClosed(ws);
-      }
-    );
+    }, onDone: () {
+      processClosed(ws);
+    });
   }
 
   processMessage(WebSocket ws, String receivedMessage) {
@@ -77,23 +65,20 @@ class WebSocketHandler {
       String sendMessage = '';
       String userName;
       userName = getUserName(ws);
-      if (LOG_REQUESTS) {
-        log('${new DateTime.now().toString()} - Received message on connection'
+      log('Received message on connection'
           ' ${ws.hashCode}: $receivedMessage');
-      }
       if (userName != null) {
         sendMessage = '${timeStamp()} $userName >> $receivedMessage';
       } else if (receivedMessage.startsWith("userName=")) {
         userName = receivedMessage.substring(9);
         if (users[userName] != null) {
           sendMessage = 'Note : $userName already exists in this chat room. '
-            'Previous connection was deleted.\n';
-          if (LOG_REQUESTS) {
-            log('${new DateTime.now().toString()} - Duplicated name, closed previous '
-            'connection ${users[userName].hashCode} (active connections : ${users.length})');
-          }
-          users[userName].add(preFormat('$userName has joind using another connection!'));
-          users[userName].close();  //  close the previous connection
+              'Previous connection was deleted.\n';
+          log('Duplicated name, closed previous '
+              'connection ${users[userName].hashCode} (active connections : ${users.length})');
+          users[userName]
+              .add(preFormat('$userName has joind using another connection!'));
+          users[userName].close(); //  close the previous connection
         }
         users[userName] = ws;
         sendMessage = '${sendMessage}${timeStamp()} * $userName joined.';
@@ -105,21 +90,20 @@ class WebSocketHandler {
     }
   }
 
-  processClosed(WebSocket ws){
+  processClosed(WebSocket ws) {
     try {
       String userName = getUserName(ws);
       if (userName != null) {
         String sendMessage = '${timeStamp()} * $userName left.';
         users.remove(userName);
         sendAll(sendMessage);
-        if (LOG_REQUESTS) {
-          log('${new DateTime.now().toString()} - Closed connection '
+        log('Closed connection '
             '${ws.hashCode} with ${ws.closeCode} for ${ws.closeReason}'
             '(active connections : ${users.length})');
-        }
       }
     } catch (err, st) {
-      print('${new DateTime.now().toString()} Exception - ${err.toString()}');
+      print(
+          '${new DateTime.now().toString().substring(11)} - Exception - ${err.toString()}');
       print(st);
     }
   }
@@ -128,54 +112,56 @@ class WebSocketHandler {
     String userName;
     users.forEach((key, value) {
       if (value == ws) userName = key;
-      });
+    });
     return userName;
   }
 
   void sendAll(String sendMessage) {
     users.forEach((key, value) {
       value.add(preFormat(sendMessage));
-      });
+    });
   }
 }
 
-
-String timeStamp() => new DateTime.now().toString().substring(11,16);
-
+String timeStamp() => new DateTime.now().toString().substring(11, 16);
 
 String preFormat(String s) {
-  StringBuffer b = new StringBuffer();
+  StringBuffer b = StringBuffer();
   String c;
   bool nbsp = false;
-  for (int i = 0; i < s.length; i++){
+  for (int i = 0; i < s.length; i++) {
     c = s[i];
     if (c != ' ') nbsp = false;
-    if (c == '&') { b.write('&amp;');
-    } else if (c == '"') { b.write('&quot;');
-    } else if (c == "'") { b.write('&#39;');
-    } else if (c == '<') { b.write('&lt;');
-    } else if (c == '>') { b.write('&gt;');
-    } else if (c == '\n') { b.write('<br>');
+    if (c == '&') {
+      b.write('&amp;');
+    } else if (c == '"') {
+      b.write('&quot;');
+    } else if (c == "'") {
+      b.write('&#39;');
+    } else if (c == '<') {
+      b.write('&lt;');
+    } else if (c == '>') {
+      b.write('&gt;');
+    } else if (c == '\n') {
+      b.write('<br>');
     } else if (c == ' ') {
       if (!nbsp) {
         b.write(' ');
         nbsp = true;
+      } else {
+        b.write('&nbsp;');
       }
-      else { b.write('&nbsp;');
-      }
-    }
-    else { b.write(c);
+    } else {
+      b.write(c);
     }
   }
   return b.toString();
 }
 
-
 // adapt this function to your logger
 void log(String s) {
-  print(s);
+  if (LOG_REQUESTS) print('${DateTime.now().toString().substring(11)} : $s');
 }
-
 
 // handle HTTP requests
 class HttpRequestHandler {
@@ -186,34 +172,32 @@ class HttpRequestHandler {
       if (fileName == '/chat') {
         if (request.headers['user-agent'][0].contains('Dart')) {
           fileName = 'web/WebSocketChatClient.html';
+        } else {
+          fileName = 'web/WebSocketChat.html';
         }
-        else { fileName = 'web/WebSocketChat.html';
-        }
-        new FileHandler().sendFile(request, response, fileName);
-      }
-      else if (fileName.startsWith('/chat/')){
+        FileHandler().sendFile(request, response, fileName);
+      } else if (fileName.startsWith('/chat/')) {
         fileName = request.uri.path.replaceFirst('/chat/', 'web/');
-        new FileHandler().sendFile(request, response, fileName);
+        FileHandler().sendFile(request, response, fileName);
+      } else {
+        NotFoundHandler().onRequest(response);
       }
-      else { new NotFoundHandler().onRequest(response);
-      }
-    }
-    catch (err, st) {
-      print('${new DateTime.now().toString()} - '
-        'Http request handler error : $err.toString()');
+    } catch (err, st) {
+      print('${DateTime.now().toString().substring(11)} - '
+          'Http request handler error : $err.toString()');
       print(st);
+      response.close();
     }
   }
 }
-
 
 class FileHandler {
   void sendFile(HttpRequest request, HttpResponse response, String fileName) {
     try {
       if (LOG_REQUESTS) {
-        log('${new DateTime.now().toString()} - Requested file name : $fileName');
+        log('Requested file name : $fileName');
       }
-      File file = new File(fileName);
+      File file = File(fileName);
       if (file.existsSync()) {
         String mimeType = mime.mime(fileName);
         if (mimeType == null) mimeType = 'text/plain; charset=UTF-8';
@@ -224,18 +208,17 @@ class FileHandler {
         // Pipe the file content into the response.
         file.openRead().pipe(response);
       } else {
-        if (LOG_REQUESTS) {
-          log('${new DateTime.now().toString()} - File not found: $fileName');
-        }
-        new NotFoundHandler().onRequest(response);
+                  log('File not found: $fileName');
+        NotFoundHandler().onRequest(response);
       }
     } catch (err, st) {
-      print('${new DateTime.now().toString()} - File handler error : $err.toString()');
+      print(
+          '${new DateTime.now().toString()} - File handler error : $err.toString()');
       print(st);
+      response.close();
     }
   }
 }
-
 
 class NotFoundHandler {
   static final String notFoundPageHtml = '''
@@ -246,8 +229,8 @@ class NotFoundHandler {
 <p>The requested URL or File was not found on this server.</p>
 </body></html>''';
 
-  void onRequest(HttpResponse response){
-    response.statusCode = HttpStatus.NOT_FOUND;
+  void onRequest(HttpResponse response) {
+    response.statusCode = HttpStatus.notFound;
     response.headers.set('Content-Type', 'text/html; charset=UTF-8');
     response.write(notFoundPageHtml);
     response.close();
