@@ -21,7 +21,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:mime_type/mime_type.dart' as mime;
 
-final HOST = "127.0.0.1";
+final HOST = "localhost";
 final PORT = 8080;
 final HTTP_REQUEST_PATH = "/chat";
 final WEB_SOCKET_REQUEST_PATH = "/Chat";
@@ -39,7 +39,9 @@ void main() {
         WebSocketTransformer.upgrade(request).then((ws) {
           webSocketHandler.wsHandler(ws);
         });
-      } else if (request.uri.path == HTTP_REQUEST_PATH) {
+      }
+      else if (request.uri.path.startsWith(HTTP_REQUEST_PATH)) {
+        log("HTTP request arrived");
         httpRequestHandler.requestHandler(request);
       }
     });
